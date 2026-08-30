@@ -65,7 +65,7 @@ AIエージェント（Claude Code）を活用した組み込み開発の可能�
 |---|---|---|
 | ① | シリアル通信のみ | なし（USB接続のみ） |
 | ② | 単純なタクトスイッチとLED | あり（スイッチ入力→LED出力） |
-| ③ | お任せ（内容はClaudeが提案） | 未定 |
+| ③ | 明暗検知ナイトライト（CdS＋MOS-FET＋モード切替スイッチ、詳細は[programs/03_night_light/README.md](../programs/03_night_light/README.md)） | あり（CdS・MOS-FET・LED3灯・タクトスイッチ） |
 
 各プログラムは `programs/<番号>_<内容>/` 以下にPlatformIOプロジェクトとして配置する想定（例: `programs/01_serial_only/`）。①から順に、1セッションずつ進める想定でよいか確認したい。
 
