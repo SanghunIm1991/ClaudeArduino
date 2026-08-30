@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 460" font-family="sans-serif">
-  <rect x="0" y="0" width="1000" height="460" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 460" font-family="sans-serif">
+  <rect x="0" y="0" width="1120" height="460" fill="#ffffff"/>
 
   <!-- 区切り線 -->
   <line x1="330" y1="10" x2="330" y2="430" stroke="#ccc" stroke-width="1" stroke-dasharray="4,4"/>
@@ -63,15 +63,15 @@
 
   <line x1="500" y1="150" x2="600" y2="150" stroke="#000" stroke-width="2"/>
   <text x="610" y="155" font-size="14" fill="#000">D2 (デジタル入力)</text>
-  <text x="500" y="172" text-anchor="middle" font-size="11" fill="#333">短押しでAUTO→ON→OFFと循環</text>
 
   <line x1="500" y1="150" x2="500" y2="185" stroke="#000" stroke-width="2"/>
 
   <!-- resistor zigzag (vertical) R2: 10kΩ pulldown -->
   <polyline points="500,185 488,195 512,205 488,215 512,225 488,235 500,245"
             fill="none" stroke="#000" stroke-width="2"/>
-  <text x="525" y="218" font-size="14" fill="#000">R2: 10kΩ</text>
-  <text x="525" y="234" font-size="12" fill="#333">（プルダウン）</text>
+  <text x="525" y="200" font-size="14" fill="#000">R2: 10kΩ</text>
+  <text x="525" y="216" font-size="12" fill="#333">（プルダウン）</text>
+  <text x="525" y="250" font-size="11" fill="#333">短押しでAUTO→ON→OFFと循環</text>
 
   <line x1="500" y1="245" x2="500" y2="360" stroke="#000" stroke-width="2"/>
 
@@ -81,77 +81,77 @@
   <text x="500" y="398" text-anchor="middle" font-size="13" fill="#000">GND</text>
 
   <!-- ===== 右パネル: MOS-FET駆動LED回路 ===== -->
-  <text x="820" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#000">MOS-FET駆動LED回路（3灯並列）</text>
+  <text x="920" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#000">MOS-FET駆動LED回路（3灯並列）</text>
 
   <!-- +5V rail across three LED branches -->
-  <text x="820" y="48" text-anchor="middle" font-size="14" fill="#000">+5V</text>
-  <line x1="820" y1="55" x2="820" y2="70" stroke="#000" stroke-width="2"/>
-  <line x1="720" y1="70" x2="920" y2="70" stroke="#000" stroke-width="2"/>
-  <line x1="820" y1="55" x2="820" y2="70" stroke="#000" stroke-width="2"/>
+  <text x="920" y="48" text-anchor="middle" font-size="14" fill="#000">+5V</text>
+  <line x1="920" y1="55" x2="920" y2="70" stroke="#000" stroke-width="2"/>
+  <line x1="820" y1="70" x2="1020" y2="70" stroke="#000" stroke-width="2"/>
+  <line x1="920" y1="55" x2="920" y2="70" stroke="#000" stroke-width="2"/>
 
   <!-- Branch 1: Red LED, 1kΩ -->
-  <line x1="720" y1="70" x2="720" y2="90" stroke="#000" stroke-width="2"/>
-  <polyline points="720,90 708,98 732,106 708,114 732,122 708,130 720,138"
-            fill="none" stroke="#000" stroke-width="2"/>
-  <text x="738" y="112" font-size="11" fill="#000">1kΩ</text>
-  <line x1="720" y1="138" x2="720" y2="155" stroke="#000" stroke-width="2"/>
-  <polygon points="705,155 735,155 720,178" fill="none" stroke="#000" stroke-width="2"/>
-  <line x1="705" y1="178" x2="735" y2="178" stroke="#000" stroke-width="2"/>
-  <text x="720" y="196" text-anchor="middle" font-size="11" fill="#000">LED1赤</text>
-  <line x1="720" y1="178" x2="720" y2="230" stroke="#000" stroke-width="2"/>
-
-  <!-- Branch 2: White LED, 330Ω -->
   <line x1="820" y1="70" x2="820" y2="90" stroke="#000" stroke-width="2"/>
   <polyline points="820,90 808,98 832,106 808,114 832,122 808,130 820,138"
             fill="none" stroke="#000" stroke-width="2"/>
-  <text x="838" y="112" font-size="11" fill="#000">330Ω</text>
+  <text x="838" y="112" font-size="11" fill="#000">1kΩ</text>
   <line x1="820" y1="138" x2="820" y2="155" stroke="#000" stroke-width="2"/>
   <polygon points="805,155 835,155 820,178" fill="none" stroke="#000" stroke-width="2"/>
   <line x1="805" y1="178" x2="835" y2="178" stroke="#000" stroke-width="2"/>
-  <text x="820" y="196" text-anchor="middle" font-size="11" fill="#000">LED2白</text>
+  <text x="838" y="196" font-size="11" fill="#000">LED1赤</text>
   <line x1="820" y1="178" x2="820" y2="230" stroke="#000" stroke-width="2"/>
 
-  <!-- Branch 3: Green LED, 270Ω -->
+  <!-- Branch 2: White LED, 330Ω -->
   <line x1="920" y1="70" x2="920" y2="90" stroke="#000" stroke-width="2"/>
   <polyline points="920,90 908,98 932,106 908,114 932,122 908,130 920,138"
             fill="none" stroke="#000" stroke-width="2"/>
-  <text x="938" y="112" font-size="11" fill="#000">270Ω</text>
+  <text x="938" y="112" font-size="11" fill="#000">330Ω</text>
   <line x1="920" y1="138" x2="920" y2="155" stroke="#000" stroke-width="2"/>
   <polygon points="905,155 935,155 920,178" fill="none" stroke="#000" stroke-width="2"/>
   <line x1="905" y1="178" x2="935" y2="178" stroke="#000" stroke-width="2"/>
-  <text x="920" y="196" text-anchor="middle" font-size="11" fill="#000">LED3緑</text>
+  <text x="938" y="196" font-size="11" fill="#000">LED2白</text>
   <line x1="920" y1="178" x2="920" y2="230" stroke="#000" stroke-width="2"/>
 
+  <!-- Branch 3: Green LED, 270Ω -->
+  <line x1="1020" y1="70" x2="1020" y2="90" stroke="#000" stroke-width="2"/>
+  <polyline points="1020,90 1008,98 1032,106 1008,114 1032,122 1008,130 1020,138"
+            fill="none" stroke="#000" stroke-width="2"/>
+  <text x="1038" y="112" font-size="11" fill="#000">270Ω</text>
+  <line x1="1020" y1="138" x2="1020" y2="155" stroke="#000" stroke-width="2"/>
+  <polygon points="1005,155 1035,155 1020,178" fill="none" stroke="#000" stroke-width="2"/>
+  <line x1="1005" y1="178" x2="1035" y2="178" stroke="#000" stroke-width="2"/>
+  <text x="1038" y="196" font-size="11" fill="#000">LED3緑</text>
+  <line x1="1020" y1="178" x2="1020" y2="230" stroke="#000" stroke-width="2"/>
+
   <!-- merge three cathodes into MOSFET drain node -->
-  <line x1="720" y1="230" x2="920" y2="230" stroke="#000" stroke-width="2"/>
-  <line x1="820" y1="230" x2="820" y2="250" stroke="#000" stroke-width="2"/>
-  <text x="700" y="248" font-size="11" fill="#333">（3灯のカソードを共通ドレインへ束ねる）</text>
+  <line x1="820" y1="230" x2="1020" y2="230" stroke="#000" stroke-width="2"/>
+  <line x1="920" y1="230" x2="920" y2="250" stroke="#000" stroke-width="2"/>
 
   <!-- MOSFET symbol (簡略N-ch記号): drain上, source下, gate左。四角囲みにG/D/Sのピン表記を明示（正式なMOSFET回路記号は手描きの複雑さが増すため簡略化） -->
-  <line x1="820" y1="250" x2="820" y2="270" stroke="#000" stroke-width="2"/>
-  <text x="828" y="262" font-size="10" fill="#333">D</text>
-  <rect x="805" y="270" width="30" height="45" fill="none" stroke="#000" stroke-width="2"/>
-  <text x="820" y="298" text-anchor="middle" font-size="10" fill="#000">Q1</text>
-  <text x="855" y="298" font-size="11" fill="#000">MOS-FET</text>
-  <text x="855" y="313" font-size="10" fill="#333">(Nch, ローサイド)</text>
-  <text x="789" y="290" text-anchor="end" font-size="10" fill="#333">G</text>
-  <text x="828" y="330" font-size="10" fill="#333">S</text>
+  <line x1="920" y1="250" x2="920" y2="270" stroke="#000" stroke-width="2"/>
+  <text x="928" y="262" font-size="10" fill="#333">D</text>
+  <rect x="905" y="270" width="30" height="45" fill="none" stroke="#000" stroke-width="2"/>
+  <text x="920" y="298" text-anchor="middle" font-size="10" fill="#000">Q1</text>
+  <text x="955" y="298" font-size="11" fill="#000">MOS-FET</text>
+  <text x="955" y="313" font-size="10" fill="#333">(Nch, ローサイド)</text>
+  <text x="889" y="290" text-anchor="end" font-size="10" fill="#333">G</text>
+  <text x="928" y="330" font-size="10" fill="#333">S</text>
 
   <!-- gate line from D9 -->
-  <line x1="680" y1="285" x2="805" y2="285" stroke="#000" stroke-width="2"/>
+  <line x1="780" y1="285" x2="905" y2="285" stroke="#000" stroke-width="2"/>
   <!-- gate resistor -->
-  <polyline points="680,285 672,278 656,292 640,278 624,292 608,278 600,285"
+  <polyline points="780,285 772,278 756,292 740,278 724,292 708,278 700,285"
             fill="none" stroke="#000" stroke-width="2"/>
-  <text x="640" y="270" text-anchor="middle" font-size="11" fill="#000">1kΩ（ゲート抵抗）</text>
-  <line x1="600" y1="285" x2="560" y2="285" stroke="#000" stroke-width="2"/>
-  <text x="555" y="280" text-anchor="end" font-size="14" fill="#000">D9 (デジタル出力/PWM)</text>
+  <text x="740" y="270" text-anchor="middle" font-size="11" fill="#000">1kΩ（ゲート抵抗）</text>
+  <line x1="700" y1="285" x2="676" y2="285" stroke="#000" stroke-width="2"/>
+  <text x="676" y="280" text-anchor="end" font-size="14" fill="#000">D9 (デジタル出力/PWM)</text>
 
   <!-- source to GND -->
-  <line x1="820" y1="315" x2="820" y2="360" stroke="#000" stroke-width="2"/>
-  <line x1="800" y1="360" x2="840" y2="360" stroke="#000" stroke-width="2"/>
-  <line x1="806" y1="368" x2="834" y2="368" stroke="#000" stroke-width="2"/>
-  <line x1="812" y1="376" x2="828" y2="376" stroke="#000" stroke-width="2"/>
-  <text x="820" y="398" text-anchor="middle" font-size="13" fill="#000">GND</text>
+  <line x1="920" y1="315" x2="920" y2="360" stroke="#000" stroke-width="2"/>
+  <line x1="900" y1="360" x2="940" y2="360" stroke="#000" stroke-width="2"/>
+  <line x1="906" y1="368" x2="934" y2="368" stroke="#000" stroke-width="2"/>
+  <line x1="912" y1="376" x2="928" y2="376" stroke="#000" stroke-width="2"/>
+  <text x="920" y="398" text-anchor="middle" font-size="13" fill="#000">GND</text>
 
-  <text x="820" y="420" text-anchor="middle" font-size="12" fill="#333">ゲートHIGHでMOS-FET導通→3灯点灯</text>
+  <text x="920" y="420" text-anchor="middle" font-size="12" fill="#333">ゲートHIGHでMOS-FET導通→3灯点灯</text>
+  <text x="920" y="438" text-anchor="middle" font-size="12" fill="#333">（3灯のカソードを共通ドレインへ束ねる）</text>
 </svg>
