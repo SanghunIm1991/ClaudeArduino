@@ -3,3 +3,8 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+# 実機写真: 公開用に選定した1枚（circuit_photo.jpg）のみGit管理対象とし、
+# 未選定の生データ（タイムスタンプ名の元ファイル）は容量・整理の観点でローカル保持のみとする
+image/*.jpg
+!image/circuit_photo.jpg
