@@ -141,6 +141,97 @@ MOS-FET＋ダイオードの定番の組み合わせは、モーターやリレ�
 
 `DARK_THRESHOLD_ON` / `DARK_THRESHOLD_OFF` はCdSセルの個体差・設置環境の明るさに依存するため、コード中に定数として用意し、実機でのシリアル出力（`cds=...`）を確認しながら調整する運用とする。②のチャタリング検証と同様、実測を伴う調整が必要になった場合は改めて計測・記録する。
 
+## プログラム設計
+
+`src/main.cpp` の実装レベルの設計。上記「動作仕様」がユーザーから見た挙動の説明であるのに対し、ここでは`loop()`内部の処理順序・状態管理・判定ロジックを扱う。
+
+### 処理フロー（`loop()`関数）
+
+`loop()`は毎周回、以下の順序で「スイッチ判定 → CdS判定 → 出力」を行う非ブロッキング構成（`delay()`を使わない）。②のデバウンス実装と同じく、時間経過はすべて`micros()`/`millis()`の差分比較で判定する。
+
+```mermaid
+flowchart TD
+    A["digitalRead(SWITCH_PIN)"] --> B{"直前の生値から変化した？"}
+    B -- Yes --> C["lastDebounceTimeを更新<br>lastFlickerableSwitchStateを更新"]
+    B -- No --> D
+    C --> D{"変化から50ms経過した？"}
+    D -- No --> H["analogRead(CDS_PIN)"]
+    D -- Yes --> E{"debouncedSwitchStateと<br>currentSwitchStateが違う？"}
+    E -- No --> H
+    E -- Yes --> F["debouncedSwitchStateを更新"]
+    F --> G{"LOW→HIGHの立ち上がり？"}
+    G -- Yes --> G2["currentModeを次のモードへ<br>(AUTO→FORCE_ON→FORCE_OFF→AUTO)"]
+    G -- No --> H
+    G2 --> H
+    H --> I{"currentModeは？"}
+    I -- FORCE_ON --> J1["ledOn = true"]
+    I -- FORCE_OFF --> J2["ledOn = false"]
+    I -- AUTO --> J3["ヒステリシス判定<br>(後述)でautoLedOnを更新<br>ledOn = autoLedOn"]
+    J1 --> K["digitalWrite(GATE_PIN, ledOn)"]
+    J2 --> K
+    J3 --> K
+    K --> L{"前回シリアル出力から<br>500ms経過した？"}
+    L -- Yes --> M["mode/cds/ledを出力"]
+    L -- No --> A
+    M --> A
+```
+
+ポイント:
+
+- スイッチ判定とCdS判定・LED出力を同じ周回内で行うため、モード切替の反応とLED制御の反応はどちらも数msオーダーで、体感上ほぼ同時に反映される。
+- デバウンス確定待ち（`D`が"No"の分岐）や立ち上がりでない場合（`G`が"No"の分岐）でも、CdS判定とLED出力（`H`以降）は毎周回必ず実行される。スイッチの状態確定を待つ間もAUTOモードの明暗追従は止まらない。
+
+### モード状態遷移
+
+3モードは`enum Mode`の値を`(currentMode + 1) % MODE_COUNT`で巡回させているだけなので、順序は列挙順（`MODE_AUTO=0, MODE_FORCE_ON=1, MODE_FORCE_OFF=2`）に固定される。遷移が起きるのは、デバウンス確定後の状態が LOW→HIGH に変化した瞬間（押下エッジ）のみで、離す動作や押しっぱなしでは遷移しない。
+
+```mermaid
+stateDiagram-v2
+    [*] --> AUTO
+    AUTO --> FORCE_ON: スイッチ押下(立ち上がりエッジ)
+    FORCE_ON --> FORCE_OFF: スイッチ押下(立ち上がりエッジ)
+    FORCE_OFF --> AUTO: スイッチ押下(立ち上がりエッジ)
+```
+
+### スイッチのデバウンスロジック
+
+②で実測検証済みの時間ベースデバウンス（`chatter_measurement.cpp`、約1msの間に生信号が2回反転する事例を確認）をそのまま流用している。3つの変数の役割は以下の通り。
+
+| 変数 | 役割 |
+|---|---|
+| `lastFlickerableSwitchState` | 直近の生の`digitalRead`値。この値が変化するたびに`lastDebounceTime`をリセットし、チャタリング中は確定処理に進ませない |
+| `lastDebounceTime` | 生値が最後に変化した時刻（`micros()`）。ここから`DEBOUNCE_DELAY_US`(50ms)経過するまでは「まだ確定していない」とみなす |
+| `debouncedSwitchState` | チャタリング収束後に確定した状態。この値が変化した回（かつLOW→HIGHの立ち上がり）だけモードを進める |
+
+`debouncedSwitchState`の変化判定と立ち上がり判定を分けているのは、離すとき（HIGH→LOW）にモードが進んでしまわないようにするため。1回の物理的な押下につきモードは1段階だけ進む。
+
+### AUTOモードのヒステリシス判定ロジック
+
+`cdsValue`（暗いほど大きい値）を2つの閾値と比較し、`autoLedOn`（前回の点灯/消灯状態を保持する変数）を更新する。
+
+```mermaid
+flowchart LR
+    subgraph "cds値の範囲（現在値: DARK_THRESHOLD_OFF=800 / DARK_THRESHOLD_ON=850）"
+        Z1["cds ≤ 800<br>明るい<br>→ autoLedOn = false"] --- Z2["800 < cds < 850<br>境界帯<br>→ autoLedOnは変更せず直前の状態を維持"] --- Z3["cds ≥ 850<br>暗い<br>→ autoLedOn = true"]
+    end
+```
+
+境界帯（801〜849）では`if`/`else if`のどちらの条件にも一致しないため代入文が実行されず、`autoLedOn`は直前周回の値のまま保持される。これにより、CdS値が2つの閾値の間で微小に揺れても、その揺れだけではLEDのON/OFFが切り替わらない（点滅防止）。閾値の実測・調整経緯は前述「閾値の実機調整について」および「動作確認結果」参照。
+
+### 定数・グローバル変数一覧
+
+| 名前 | 種別 | 役割 |
+|---|---|---|
+| `BAUD_RATE` | 定数 | シリアル通信速度（①の実績を踏襲し9600） |
+| `SWITCH_PIN` / `GATE_PIN` / `CDS_PIN` | 定数 | ピン割り当て（詳細は「ピン割り当て」表） |
+| `DEBOUNCE_DELAY_US` | 定数 | デバウンス確定までの待ち時間（50ms、②の実測に基づく） |
+| `DARK_THRESHOLD_ON` / `DARK_THRESHOLD_OFF` | 定数 | AUTOモードのヒステリシス閾値（実機調整値） |
+| `STATUS_INTERVAL_MS` | 定数 | シリアル定期出力の間隔（500ms） |
+| `currentMode` | グローバル変数 | 現在のモード（`AUTO`/`FORCE_ON`/`FORCE_OFF`） |
+| `autoLedOn` | グローバル変数 | AUTOモードでのヒステリシス判定結果（前回状態の保持用） |
+| `lastFlickerableSwitchState` / `debouncedSwitchState` / `lastDebounceTime` | グローバル変数 | デバウンス処理用（役割は上表参照） |
+| `lastStatusTime` | グローバル変数 | 前回シリアル出力時刻（`millis()`）。500ms周期の管理に使用 |
+
 ## ファイル構成
 
 ```
