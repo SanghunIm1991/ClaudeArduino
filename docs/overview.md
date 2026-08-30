@@ -14,7 +14,7 @@ AIエージェント（Claude Code）を活用した組み込み開発の可能�
 |---|---|
 | ボード | Arduino Uno R3 |
 | 公式ドキュメント | https://docs.arduino.cc/hardware/uno-rev3/ |
-| データシート | `A000066-datasheet.pdf`（プロジェクト直下に格納済み） |
+| データシート | `A000066-datasheet.pdf`（プロジェクト直下に格納済み。著作権配慮のためGit管理対象外・ローカルのみで保持） |
 | マイコン | ATmega328P |
 | 動作電圧 | 5V |
 | USB給電時の電源電圧 | 5V（PCのUSBポートから供給） |
