@@ -89,19 +89,39 @@ graph LR
 
 - 押下時の電流: I = 5V / 10kΩ = 0.5mA（デジタル入力のプルダウン電流として妥当な範囲）
 
-## 動作仕様・実装・動作確認
+## 動作仕様
 
-未実装（設計レビュー中）。承認後にPlatformIOプロジェクトとしてコードを実装し、本ドキュメントに追記する。
+- `D2`（スイッチ入力）の状態をそのまま`D8`（LED出力）へ出力する。プルダウン回路のため、スイッチを押している間`D2`はHIGH→LED点灯、離すとLOW→消灯。
+- チャタリング対策は行わない（前述の方針どおり）。
 
 ## ファイル構成
 
 ```
 programs/02_switch_led/
-├── README.md                            本ドキュメント（設計内容。実装後にビルド手順等を追記予定）
+├── README.md                            本ドキュメント
+├── platformio.ini                       PlatformIO設定（ボード: uno、書き込み先: COM3）
+├── src/main.cpp                         本体プログラム
 ├── circuit_diagram.svg                  回路図（手描きSVG・第一候補）
 ├── circuit_diagram_schemdraw_switch.svg 回路図（schemdraw生成・スイッチ回路、比較用）
 ├── circuit_diagram_schemdraw_led.svg    回路図（schemdraw生成・LED回路、比較用）
 └── generate_schemdraw_diagram.py        上記schemdraw版の生成スクリプト
 ```
 
-コード（`src/main.cpp`等のPlatformIOプロジェクト一式）は未実装のため未記載。実装後に追記する。
+## ビルド・書き込み・動作確認手順
+
+前提: VS Code + PlatformIO IDE拡張機能がインストール済みであること。回路設計（部品・ピン割り当て・電圧電流計算）は上記「電気工作」参照。実際の配線・ブレッドボード組み立てはユーザーが行う。
+
+1. 上記回路設計に沿って配線する。
+2. VS Code で `programs/02_switch_led/` フォルダを開く（PlatformIOプロジェクトとして認識される）。
+3. Arduino Uno をUSBケーブルでPCに接続する。
+4. PlatformIOのUploadボタン（→アイコン）でビルド・書き込みを実行する。
+   - CLIの場合: `pio run --target upload`
+5. スイッチを押している間だけLEDが点灯することを確認する。
+
+## 接続ポートについて
+
+`platformio.ini` の `upload_port` は、プログラム①での動作確認時の実績（COM3）を暫定値として設定している。USBポートの差し替えやPC再起動などによりCOM番号が変わった場合は、実際のポート番号に書き換える必要がある（確認方法: `pio device list`）。
+
+## 動作確認結果
+
+ビルドは確認済み（2026-08-30、`pio run`で成功）。実機での書き込み・スイッチ/LED動作確認は配線完了後に実施する。
