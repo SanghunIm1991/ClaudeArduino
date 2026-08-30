@@ -7,7 +7,7 @@ AIエージェント（Claude Code）を用いた組み込み開発の可能性�
 ## ハードウェア
 
 - マイコンボード: Arduino Uno R3（公式サイト: https://docs.arduino.cc/hardware/uno-rev3/）
-- データシート: `A000066-datasheet.pdf`（プロジェクト直下に格納済み）
+- データシート: `A000066-datasheet.pdf`（プロジェクト直下に格納済み。著作権配慮のためGit管理対象外・ローカルのみで保持）
 - 周辺部品: SWITCH SCIENCE「Arduinoをはじめよう」キット（内容物は `docs/overview.md` 参照）
 - 電気工作（実配線・ブレッドボード組み立て）はユーザーが行う。Claudeは回路図をmermaid記法で作成し、**必ず電圧・電流計算を添える**。
 

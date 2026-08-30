@@ -5,3 +5,6 @@
 \.vscode/ipch
 Thumbs.db
 .DS_Store
+
+# データシート等の配布元著作物はローカル管理のみとし、Gitには含めない
+A000066-datasheet.pdf
