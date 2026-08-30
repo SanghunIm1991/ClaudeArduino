@@ -14,8 +14,10 @@ const unsigned long DEBOUNCE_DELAY_US = 50000UL;
 // 暗さ判定のヒステリシス閾値（要実機調整）。
 // CdSセルの個体差・設置環境の明るさにより適正値は変わるため、
 // 動作確認時にシリアル出力される生値(cds=...)を見ながら調整すること。
-const int DARK_THRESHOLD_ON = 600;   // この値を超えたら暗いと判定して点灯
-const int DARK_THRESHOLD_OFF = 500;  // この値を下回ったら明るいと判定して消灯（ONより低く設定しチャタリング的な点滅を防止）
+// 実機実測（2026-08-30、室内照明の消灯≈900超／点灯≈700〜800、点灯側は幅あり）を踏まえた暫定値。
+// 元の600/500では点灯時(≈700)でも「暗い」と誤判定し常時点灯してしまっていた。
+const int DARK_THRESHOLD_ON = 850;   // この値を超えたら暗いと判定して点灯
+const int DARK_THRESHOLD_OFF = 800;  // この値を下回ったら明るいと判定して消灯（ONより低く設定しチャタリング的な点滅を防止）
 
 const unsigned long STATUS_INTERVAL_MS = 500UL;
 
