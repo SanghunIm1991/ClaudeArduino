@@ -164,6 +164,7 @@ MOS-FET＋ダイオードの定番の組み合わせは、モーターやリレ�
 `loop()`は毎周回、以下の順序で「スイッチ判定 → CdS判定 → 出力」を行う非ブロッキング構成（`delay()`を使わない）。②のデバウンス実装と同じく、時間経過はすべて`micros()`/`millis()`の差分比較で判定する。
 
 ```mermaid
+%%{init: {'flowchart': {'curve': 'linear'}}}%%
 flowchart TD
     A["digitalRead(SWITCH_PIN)"] --> B{"直前の生値から変化した？"}
     B -- Yes --> C["lastDebounceTimeを更新<br>lastFlickerableSwitchStateを更新"]
@@ -224,6 +225,7 @@ stateDiagram-v2
 `cdsValue`（暗いほど大きい値）を2つの閾値と比較し、`autoLedOn`（前回の点灯/消灯状態を保持する変数）を更新する。
 
 ```mermaid
+%%{init: {'flowchart': {'curve': 'linear'}}}%%
 flowchart LR
     subgraph "cds値の範囲（現在値: DARK_THRESHOLD_OFF=800 / DARK_THRESHOLD_ON=850）"
         Z1["cds ≤ 800<br>明るい<br>→ autoLedOn = false"] --- Z2["800 < cds < 850<br>境界帯<br>→ autoLedOnは変更せず直前の状態を維持"] --- Z3["cds ≥ 850<br>暗い<br>→ autoLedOn = true"]
