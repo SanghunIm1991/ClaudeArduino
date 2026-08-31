@@ -164,37 +164,30 @@ MOS-FET＋ダイオードの定番の組み合わせは、モーターやリレ�
 `loop()`は毎周回、以下の順序で「スイッチ判定 → CdS判定 → 出力」を行う非ブロッキング構成（`delay()`を使わない）。②のデバウンス実装と同じく、時間経過はすべて`micros()`/`millis()`の差分比較で判定する。
 
 ```mermaid
-%%{init: {'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'flowchart': {'curve': 'step'}}}%%
 flowchart TD
-    A["digitalRead(SWITCH_PIN)"] --> B{"直前の生値から変化した？"}
-    B -- Yes --> C["lastDebounceTimeを更新<br>lastFlickerableSwitchStateを更新"]
-    B -- No --> D
-    C --> D{"変化から50ms経過した？"}
-    D -- No --> H["analogRead(CDS_PIN)"]
-    D -- Yes --> E{"debouncedSwitchStateと<br>currentSwitchStateが違う？"}
-    E -- No --> H
-    E -- Yes --> F["debouncedSwitchStateを更新"]
-    F --> G{"LOW→HIGHの立ち上がり？"}
-    G -- Yes --> G2["currentModeを次のモードへ<br>(AUTO→FORCE_ON→FORCE_OFF→AUTO)"]
-    G -- No --> H
+    A["digitalRead(SWITCH_PIN)"] --> B["デバウンス処理<br>(内部詳細は後述「スイッチのデバウンスロジック」参照)"]
+    B --> C{"立ち上がりエッジ確定？"}
+    C -- Yes --> D["currentModeを次のモードへ<br>(AUTO→FORCE_ON→FORCE_OFF→AUTO)"]
+    C -- No --> E
+    D --> E["analogRead(CDS_PIN)"]
+    E --> F{"currentModeは？"}
+    F -- FORCE_ON --> G1["ledOn = true"]
+    F -- FORCE_OFF --> G2["ledOn = false"]
+    F -- AUTO --> G3["ヒステリシス判定<br>(後述)でautoLedOnを更新<br>ledOn = autoLedOn"]
+    G1 --> H["digitalWrite(GATE_PIN, ledOn)"]
     G2 --> H
-    H --> I{"currentModeは？"}
-    I -- FORCE_ON --> J1["ledOn = true"]
-    I -- FORCE_OFF --> J2["ledOn = false"]
-    I -- AUTO --> J3["ヒステリシス判定<br>(後述)でautoLedOnを更新<br>ledOn = autoLedOn"]
-    J1 --> K["digitalWrite(GATE_PIN, ledOn)"]
-    J2 --> K
-    J3 --> K
-    K --> L{"前回シリアル出力から<br>500ms経過した？"}
-    L -- Yes --> M["mode/cds/ledを出力"]
-    L -- No --> A
-    M --> A
+    G3 --> H
+    H --> I{"前回シリアル出力から<br>500ms経過した？"}
+    I -- Yes --> J["mode/cds/ledを出力"]
+    I -- No --> A
+    J --> A
 ```
 
 ポイント:
 
 - スイッチ判定とCdS判定・LED出力を同じ周回内で行うため、モード切替の反応とLED制御の反応はどちらも数msオーダーで、体感上ほぼ同時に反映される。
-- デバウンス確定待ち（`D`が"No"の分岐）や立ち上がりでない場合（`G`が"No"の分岐）でも、CdS判定とLED出力（`H`以降）は毎周回必ず実行される。スイッチの状態確定を待つ間もAUTOモードの明暗追従は止まらない。
+- デバウンスが未確定の場合や立ち上がりでない場合（`C`が"No"の分岐）でも、CdS判定とLED出力（`E`以降）は毎周回必ず実行される。スイッチの状態確定を待つ間もAUTOモードの明暗追従は止まらない。デバウンス処理内部の3段階判定（生値変化→50ms経過待ち→立ち上がり判定）は次項「スイッチのデバウンスロジック」で扱う。
 
 ### モード状態遷移
 
@@ -225,7 +218,7 @@ stateDiagram-v2
 `cdsValue`（暗いほど大きい値）を2つの閾値と比較し、`autoLedOn`（前回の点灯/消灯状態を保持する変数）を更新する。
 
 ```mermaid
-%%{init: {'flowchart': {'curve': 'linear'}}}%%
+%%{init: {'flowchart': {'curve': 'step'}}}%%
 flowchart LR
     subgraph "cds値の範囲（現在値: DARK_THRESHOLD_OFF=800 / DARK_THRESHOLD_ON=850）"
         Z1["cds ≤ 800<br>明るい<br>→ autoLedOn = false"] --- Z2["800 < cds < 850<br>境界帯<br>→ autoLedOnは変更せず直前の状態を維持"] --- Z3["cds ≥ 850<br>暗い<br>→ autoLedOn = true"]
