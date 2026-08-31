@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 1300" font-family="sans-serif">
+  <rect x="0" y="0" width="1020" height="1300" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <text x="510" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#000">loop() 処理フロー</text>
+  <text x="510" y="46" text-anchor="middle" font-size="12" fill="#333">配線は下方向を基本とし、折れは「下+横一方向」または「横→下/上→逆側の横」の左右対称ブラケット型のみ</text>
+
+  <!-- ===== ノード ===== -->
+
+  <!-- A -->
+  <rect x="360" y="62" width="240" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="95" text-anchor="middle" font-size="13" fill="#000">digitalRead(SWITCH_PIN)</text>
+
+  <!-- B -->
+  <rect x="290" y="175" width="380" height="80" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="208" text-anchor="middle" font-size="13" fill="#000">デバウンス処理</text>
+  <text x="480" y="228" text-anchor="middle" font-size="11" fill="#333">(内部詳細は後述「スイッチのデバウンス</text>
+  <text x="480" y="242" text-anchor="middle" font-size="11" fill="#333">ロジック」参照)</text>
+
+  <!-- C (diamond) -->
+  <polygon points="480,310 620,360 480,410 340,360" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="365" text-anchor="middle" font-size="13" fill="#000">立ち上がりエッジ確定？</text>
+
+  <!-- D -->
+  <rect x="650" y="420" width="300" height="80" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="800" y="453" text-anchor="middle" font-size="13" fill="#000">currentModeを次のモードへ</text>
+  <text x="800" y="475" text-anchor="middle" font-size="11" fill="#333">(AUTO→FORCE_ON→FORCE_OFF→AUTO)</text>
+
+  <!-- M1 junction -->
+  <circle cx="480" cy="545" r="4" fill="#000"/>
+
+  <!-- E -->
+  <rect x="370" y="592" width="220" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="625" text-anchor="middle" font-size="13" fill="#000">analogRead(CDS_PIN)</text>
+
+  <!-- F (diamond) -->
+  <polygon points="480,690 620,740 480,790 340,740" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="745" text-anchor="middle" font-size="13" fill="#000">currentModeは？</text>
+
+  <!-- G1 -->
+  <rect x="700" y="822" width="200" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="800" y="855" text-anchor="middle" font-size="13" fill="#000">ledOn = true</text>
+
+  <!-- G2 -->
+  <rect x="95" y="822" width="200" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="195" y="855" text-anchor="middle" font-size="13" fill="#000">ledOn = false</text>
+
+  <!-- G3 -->
+  <rect x="320" y="840" width="320" height="110" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="873" text-anchor="middle" font-size="13" fill="#000">ヒステリシス判定</text>
+  <text x="480" y="895" text-anchor="middle" font-size="11" fill="#333">(後述)でautoLedOnを更新</text>
+  <text x="480" y="915" text-anchor="middle" font-size="11" fill="#333">ledOn = autoLedOn</text>
+
+  <!-- H -->
+  <rect x="330" y="982" width="300" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="1015" text-anchor="middle" font-size="13" fill="#000">digitalWrite(GATE_PIN, ledOn)</text>
+
+  <!-- I (diamond) -->
+  <polygon points="480,1070 630,1120 480,1170 330,1120" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="480" y="1113" text-anchor="middle" font-size="12" fill="#000">前回シリアル出力から</text>
+  <text x="480" y="1131" text-anchor="middle" font-size="12" fill="#000">500ms経過した？</text>
+
+  <!-- J -->
+  <rect x="690" y="1182" width="220" height="56" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <text x="800" y="1215" text-anchor="middle" font-size="13" fill="#000">mode/cds/ledを出力</text>
+
+  <!-- M2 junction -->
+  <circle cx="480" cy="1260" r="4" fill="#000"/>
+
+  <!-- ===== 配線 ===== -->
+
+  <!-- A -> B (下) -->
+  <polyline points="480,118 480,175" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- B -> C (下) -->
+  <polyline points="480,255 480,310" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- C: Yes to D (下右) -->
+  <polyline points="480,410 480,460 650,460" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="495" y="435" font-size="12" fill="#333">Yes</text>
+
+  <!-- C: No to M1 (下) -->
+  <polyline points="480,410 480,545" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="440" y="480" font-size="12" fill="#333">No</text>
+
+  <!-- D -> M1 (下左) -->
+  <polyline points="800,500 800,545 480,545" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- M1 -> E (下) -->
+  <polyline points="480,545 480,592" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- E -> F (下) -->
+  <polyline points="480,648 480,690" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- F: AUTO to G3 (下) -->
+  <polyline points="480,790 480,840" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="495" y="820" font-size="12" fill="#333">AUTO</text>
+
+  <!-- F: FORCE_ON to G1 (右下) -->
+  <polyline points="620,740 800,740 800,822" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="700" y="732" font-size="12" fill="#333">FORCE_ON</text>
+
+  <!-- F: FORCE_OFF to G2 (左下) -->
+  <polyline points="340,740 195,740 195,822" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="215" y="732" font-size="12" fill="#333">FORCE_OFF</text>
+
+  <!-- G3 -> H (下) -->
+  <polyline points="480,950 480,982" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- G1 -> H (下左) -->
+  <polyline points="800,878 800,1010 630,1010" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- G2 -> H (下右) -->
+  <polyline points="195,878 195,1010 330,1010" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- H -> I (下) -->
+  <polyline points="480,1038 480,1070" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- I: Yes to J (右下) -->
+  <polyline points="630,1120 800,1120 800,1182" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="705" y="1112" font-size="12" fill="#333">Yes</text>
+
+  <!-- I: No to M2 (下) -->
+  <polyline points="480,1170 480,1260" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="440" y="1215" font-size="12" fill="#333">No</text>
+
+  <!-- J -> M2 (下左) -->
+  <polyline points="800,1238 800,1260 480,1260" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- M2 -> A ループバック (左上右) -->
+  <polyline points="480,1260 70,1260 70,90 360,90" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+</svg>

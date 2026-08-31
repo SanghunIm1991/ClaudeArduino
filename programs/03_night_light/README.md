@@ -147,7 +147,7 @@ MOS-FET＋ダイオードの定番の組み合わせは、モーターやリレ�
 
 - 起動時のモードは `AUTO`（自動点灯モード）。
 - `D2`（モード切替スイッチ）を短押しするたびに `AUTO → FORCE_ON（常時点灯） → FORCE_OFF（常時消灯） → AUTO …` と循環する。スイッチ判定は②で実測検証済みの時間ベースデバウンス（50ms）を流用。
-- `AUTO`モードでは、CdSの読み取り値（`A0`、暗いほど大きい値）が閾値を超えたら点灯、下回ったら消灯する。閾値には二段構え（ヒステリシス）を設け、境界付近での点滅を防止する（`DARK_THRESHOLD_ON=600` で点灯、`DARK_THRESHOLD_OFF=500` で消灯。中間の値では直前の状態を保持）。
+- `AUTO`モードでは、CdSの読み取り値（`A0`、暗いほど大きい値）が閾値を超えたら点灯、下回ったら消灯する。閾値には二段構え（ヒステリシス）を設け、境界付近での点滅を防止する（`DARK_THRESHOLD_ON=850` で点灯、`DARK_THRESHOLD_OFF=800` で消灯。中間の値では直前の状態を保持）。
 - LED点灯/消灯は`D9`（MOS-FETゲート）のHIGH/LOWで制御する。
 - 約500msごとに現在のモード・CdS読み取り値・LED状態をシリアル出力する（①の実績を踏襲し9600bps）。
 
@@ -163,8 +163,13 @@ MOS-FET＋ダイオードの定番の組み合わせは、モーターやリレ�
 
 `loop()`は毎周回、以下の順序で「スイッチ判定 → CdS判定 → 出力」を行う非ブロッキング構成（`delay()`を使わない）。②のデバウンス実装と同じく、時間経過はすべて`micros()`/`millis()`の差分比較で判定する。
 
+mermaidの自動レイアウト（dagre）では、分岐後の合流辺（スキップ辺）が離れた合流先へ直接つながることで折れ・迂回が増え視認性が悪化したため、回路図と同様に**手描きSVGを第一候補**とした。配線は「直線は下方向のみ」「1回折れは下+横一方向のみ」「2回折れは横→下（またはループ復帰時は横→上）→逆側の横、という左右対称のブラケット型のみ」というルールに統一し、分岐の合流点には回路図の配線タップと同じ表記（黒丸のジャンクション）を使っている。
+
+![loop()処理フロー](loop_flowchart.svg)
+
+ファイル: `programs/03_night_light/loop_flowchart.svg`
+
 ```mermaid
-%%{init: {'flowchart': {'curve': 'step'}}}%%
 flowchart TD
     A["digitalRead(SWITCH_PIN)"] --> B["デバウンス処理<br>(内部詳細は後述「スイッチのデバウンスロジック」参照)"]
     B --> C{"立ち上がりエッジ確定？"}
@@ -218,7 +223,6 @@ stateDiagram-v2
 `cdsValue`（暗いほど大きい値）を2つの閾値と比較し、`autoLedOn`（前回の点灯/消灯状態を保持する変数）を更新する。
 
 ```mermaid
-%%{init: {'flowchart': {'curve': 'step'}}}%%
 flowchart LR
     subgraph "cds値の範囲（現在値: DARK_THRESHOLD_OFF=800 / DARK_THRESHOLD_ON=850）"
         Z1["cds ≤ 800<br>明るい<br>→ autoLedOn = false"] --- Z2["800 < cds < 850<br>境界帯<br>→ autoLedOnは変更せず直前の状態を維持"] --- Z3["cds ≥ 850<br>暗い<br>→ autoLedOn = true"]
@@ -249,6 +253,7 @@ programs/03_night_light/
 ├── platformio.ini         PlatformIO設定（環境: uno）
 ├── src/main.cpp            本体プログラム
 ├── circuit_diagram.svg     回路図（手描きSVG・第一候補）
+├── loop_flowchart.svg      loop()処理フロー図（手描きSVG）
 └── image/circuit_photo.jpg 実機写真（公開用に選定した1枚。他の撮影分はローカル保持のみ）
 ```
 
